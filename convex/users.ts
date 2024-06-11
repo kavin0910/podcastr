@@ -17,4 +17,4 @@ export const createUser = internalMutation({
         name: args.name,
       });
     },
-  });
+  }); 
