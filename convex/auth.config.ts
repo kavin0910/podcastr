@@ -4,7 +4,7 @@ const authConfig = {
     providers: [
         {
             domain: "https://sweeping-liger-35.clerk.accounts.dev",
-            applicationId: "convex",
+            applicationID: "convex",
         }
     ]
 }
