@@ -7,13 +7,62 @@ import { GenerateThumbnailProps } from '@/types';
 import { Loader } from 'lucide-react';
 import { Input } from './ui/input';
 import Image from 'next/image';
+import { useToast } from './ui/use-toast';
+import { useMutation } from 'convex/react';
+import { useUploadFiles } from '@xixixao/uploadstuff/react';
+import { api } from '@/convex/_generated/api';
 
 const GenerateThumbnail = ({ setImage, setImageStorageId, image, imagePrompt, setImagePrompt }: GenerateThumbnailProps) => {
   const [isAiThumbnail, setIsAiThumbnail] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const imageRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+  const { startUpload } = useUploadFiles(generateUploadUrl);
+  const getImageUrl = useMutation(api.podcast.getUrl);
+
+  const handleImage = async (blob: Blob, fileName: string) => {
+    setIsImageLoading(true);
+    setImage('');
+
+    try {
+      const file = new File([blob], fileName, { type: 'image/png' });
+
+      const uploaded = await startUpload([file]);
+      const storageId = (uploaded[0].response as any).storageId;
+
+      setImageStorageId(storageId);
+
+      const imageUrl = await getImageUrl({ storageId });
+      setImage(imageUrl!);
+      setIsImageLoading(false);
+      toast({ title: 'Thumbnail generated successfully' })
+
+    } catch (error) {
+      console.log(error);
+      toast({ title: 'Error generating thumbnail', variant: 'destructive' })
+    }
+  }
 
   const generateImage = async () => { }
+  const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+
+    try {
+      const files = e.target.files;
+      if (!files) return;
+      const file = files[0];
+      const blob = await file.arrayBuffer()
+      .then((ab) => new Blob([ab]));
+
+      handleImage(blob, file.name);
+
+    } catch (error) {
+      console.log(error);
+      toast({ title: 'Error uploading image', variant: 'destructive' })
+      
+    }
+   }
 
   return (
     <>
@@ -63,6 +112,7 @@ const GenerateThumbnail = ({ setImage, setImageStorageId, image, imagePrompt, se
             type='file'
             className='hidden'
             ref={imageRef}
+            onChange={(e) => uploadImage(e)}
           />
 
           {!isImageLoading ? (
@@ -79,6 +129,18 @@ const GenerateThumbnail = ({ setImage, setImageStorageId, image, imagePrompt, se
             </h2>
             <p className='text-12 font-normal text-gray-1'>SVG, PNG, JPG, OR gif (max. 1080X1080px)</p>
           </div>
+        </div>
+      )}
+
+      {image && (
+        <div className='flex-center w-full'>
+          <Image
+            src={image}
+            width={200}
+            height={200}
+            className='mt-5'
+            alt='thumbnail'
+          />
         </div>
       )}
     </>
