@@ -1,7 +1,6 @@
-![image](https://github.com/muskanmi/podcastr/assets/54322853/4a135a93-80e1-4dfa-9ab4-c50b0f968ad3)
-
-
 # Podcastr Application
+
+![image](https://github.com/muskanmi/podcastr/assets/54322853/4a135a93-80e1-4dfa-9ab4-c50b0f968ad3)
 
 [Podcastr Live Website (https://podcastr-green.vercel.app)](https://podcastr-green.vercel.app/)
 
