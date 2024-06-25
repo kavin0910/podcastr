@@ -1,4 +1,9 @@
+![image](https://github.com/muskanmi/podcastr/assets/54322853/4a135a93-80e1-4dfa-9ab4-c50b0f968ad3)
+
+
 # Podcastr Application
+
+[Podcastr Live Website](https://podcastr-green.vercel.app/)
 
 Welcome to Podcastr, an AI-powered Software-as-a-Service (SaaS) application designed to revolutionize podcast creation and management. This application leverages cutting-edge AI technologies to provide features such as text-to-multiple-voices functionality and AI-generated images, all built using Next.js 14 and Convex.
 
