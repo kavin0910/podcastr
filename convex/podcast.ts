@@ -14,6 +14,7 @@ export const createPodcast = mutation({
     voicePrompt: v.string(),
     imagePrompt: v.string(),
     voiceType: v.string(),
+    categoryType: v.string(),
     views: v.number(),
     audioDuration: v.number(),
   },
@@ -46,6 +47,7 @@ export const createPodcast = mutation({
       voicePrompt: args.voicePrompt,
       imagePrompt: args.imagePrompt,
       voiceType: args.voiceType,
+      categoryType: args.categoryType,
       views: args.views,
       authorImageUrl: user[0].imageUrl,
       audioDuration: args.audioDuration,
@@ -97,6 +99,20 @@ export const getPodcastById = query({
   },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.podcastId);
+  },
+});
+
+// this query will get the podcast by the categoryType.
+export const getPodcastByCategoryType = query({
+  args: {
+    categoryType: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const podcasts = await ctx.db
+      .query("podcasts")
+      .filter((q) => q.eq(q.field("categoryType"), args.categoryType))
+      .collect();
+    return { podcasts };
   },
 });
 

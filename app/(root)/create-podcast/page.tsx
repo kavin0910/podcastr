@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import GeneratePodcast from "@/components/GeneratePodcast";
-import GenerateThumbnail from "@/components/GenerateThumbnail"
+import GenerateThumbnail from "@/components/GenerateThumbnail";
 import { Loader } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
 import { useToast } from "@/components/ui/use-toast";
@@ -37,6 +37,8 @@ import { useRouter } from "next/navigation";
 
 const voiceCategories = ["alloy", "shimmer", "nova", "echo", "fable", "onyx"];
 
+const podcastCategories = ["business", "technology", "comedy", "education", "hobbies", "government", "mental health", "family", "music", "politics", "spirituality", "culture", "arts"]
+
 const formSchema = z.object({
   podcastTitle: z.string().min(2),
   podcastDescription: z.string().min(2),
@@ -44,21 +46,27 @@ const formSchema = z.object({
 
 const CreatePodcast = () => {
   const router = useRouter();
-  const [imagePrompt, setImagePrompt] = useState('');
-  const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(null)
-  const [imageUrl, setImageUrl] = useState('');
+  const [imagePrompt, setImagePrompt] = useState("");
+  const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(
+    null
+  );
+  const [imageUrl, setImageUrl] = useState("");
 
-  const [audioUrl, setAudioUrl] = useState('');
-  const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(null)
+  const [audioUrl, setAudioUrl] = useState("");
+  const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
+    null
+  );
   const [audioDuration, setAudioDuration] = useState(0);
 
   const [voiceType, setVoiceType] = useState<string | null>(null);
-  const [voicePrompt, setVoicePrompt] = useState('');
+  const [categoryType, setCategoryType] = useState<string | null>(null);
+
+  const [voicePrompt, setVoicePrompt] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const createPodcast = useMutation(api.podcast.createPodcast)
+  const createPodcast = useMutation(api.podcast.createPodcast);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,12 +80,12 @@ const CreatePodcast = () => {
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       setIsSubmitting(true);
-      if(!audioUrl || !imageUrl || !voiceType) {
+      if (!audioUrl || !imageUrl || !voiceType || !categoryType) {
         toast({
-          title: 'Please generate ausio and image',
-        })
+          title: "Please generate audio and image",
+        });
         setIsSubmitting(false);
-        throw new Error('Please generate audio and image')
+        throw new Error("Please generate audio and image");
       }
 
       // await CreatePodcast
@@ -87,21 +95,22 @@ const CreatePodcast = () => {
         audioUrl,
         imageUrl,
         voiceType,
+        categoryType,
         imagePrompt,
         voicePrompt,
         views: 0,
         audioDuration,
         audioStorageId: audioStorageId!,
         imageStorageId: imageStorageId!,
-      })
+      });
       toast({
-        title: 'Podcast created'
-      })
+        title: "Podcast created",
+      });
       setIsSubmitting(false);
-      router.push('/')
-    } catch(error) {
+      router.push("/");
+    } catch (error) {
       console.log(error);
-      toast({ title: 'Error', variant: 'destructive' })
+      toast({ title: "Error", variant: "destructive" });
       setIsSubmitting(false);
     }
   }
@@ -192,6 +201,36 @@ const CreatePodcast = () => {
                 </FormItem>
               )}
             />
+
+            <div className="flex flex-col gap-2.5">
+              <Label className="text-16 font-bold text-white-1">
+                Select Category
+              </Label>
+
+              <Select onValueChange={(value) => setCategoryType(value)}>
+                <SelectTrigger
+                  className={cn(
+                    "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
+                  )}
+                >
+                  <SelectValue
+                    placeholder="Select Category"
+                    className="placeholder:text-gray-1"
+                  />
+                </SelectTrigger>
+                <SelectContent className="text-16 border-none bg-black-1 font-bold text-white-1 focus:ring-offset-orange-1">
+                  {podcastCategories.map((category) => (
+                    <SelectItem
+                      key={category}
+                      value={category}
+                      className="capitalize focus:ring-offset-orange-1"
+                    >
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="flex flex-col pt-10">
@@ -223,7 +262,7 @@ const CreatePodcast = () => {
                     <Loader size={20} className="animate-pin mr-2" />
                   </>
                 ) : (
-                  'Submit & Publish Podcast'
+                  "Submit & Publish Podcast"
                 )}
               </Button>
             </div>

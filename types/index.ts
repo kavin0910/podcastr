@@ -41,6 +41,7 @@ export interface PodcastProps {
   voicePrompt: string;
   imagePrompt: string | null;
   voiceType: string;
+  categoryType: string;
   audioDuration: number;
   views: number;
 }
@@ -110,6 +111,13 @@ export interface PodcastCardProps {
   title: string;
   description: string;
   podcastId: Id<"podcasts">;
+}
+
+export interface PodcasterProfileCardProps {
+  imgUrl: string;
+  title: string;
+  description: string;
+  podcastId: string;
 }
 
 export interface CarouselProps {
