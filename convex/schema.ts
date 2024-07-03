@@ -16,6 +16,7 @@ export default defineSchema({
         voicePrompt: v.string(),
         imagePrompt: v.string(),
         voiceType: v.string(),
+        categoryType: v.string(),
         audioDuration: v.number(),
         views: v.number(),
     })
