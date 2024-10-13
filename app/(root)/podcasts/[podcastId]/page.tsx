@@ -4,6 +4,7 @@ import EmptyState from "@/components/EmptyState";
 import LoaderSpinner from "@/components/LoaderSpinner";
 import PodcastCard from "@/components/PodcastCard";
 import PodcastDetailPlayer from "@/components/PodcastDetailPlayer";
+import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/nextjs";
@@ -61,6 +62,7 @@ const PodcastDetails = ({
           <p className="text-16 font-medium text-white-2">
             {podcast?.voicePrompt}
           </p>
+          <Textarea className="text-16 font-medium text-white-2 h-32 bg-[#101114] focus:bg-[#101114] focus:outline-none">{podcast.voicePrompt}</Textarea>
         </div>
         <div className="flex flex-col gap-4">
           <h1 className="text-18 font-bold text-white-1">Thumbnail Prompt</h1>
