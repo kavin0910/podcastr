@@ -59,7 +59,12 @@ const PodcastDetails = ({
         </div>
         <div className="flex flex-col gap-4">
           <h1 className="text-18 font-bold text-white-1">Transcription</h1>
-          <Textarea className="text-16 font-medium text-white-2 h-32 bg-[#101114] focus:bg-[#101114] focus:outline-none">{podcast.voicePrompt}</Textarea>
+          <Textarea
+            className="text-16 font-medium text-white-2 bg-[#101114] focus:bg-[#101114] focus:outline-none resize-none max-h-60 overflow-y-auto"
+            style={{ height: "auto", minHeight: "100px", maxHeight: "240px" }}
+            value={podcast?.voicePrompt || ""}
+            readOnly
+          />
         </div>
         <div className="flex flex-col gap-4">
           <h1 className="text-18 font-bold text-white-1">Thumbnail Prompt</h1>
