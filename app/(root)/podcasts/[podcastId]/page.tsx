@@ -59,9 +59,6 @@ const PodcastDetails = ({
         </div>
         <div className="flex flex-col gap-4">
           <h1 className="text-18 font-bold text-white-1">Transcription</h1>
-          <p className="text-16 font-medium text-white-2">
-            {podcast?.voicePrompt}
-          </p>
           <Textarea className="text-16 font-medium text-white-2 h-32 bg-[#101114] focus:bg-[#101114] focus:outline-none">{podcast.voicePrompt}</Textarea>
         </div>
         <div className="flex flex-col gap-4">
