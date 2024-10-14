@@ -1,36 +1,49 @@
-// pages/podcast/update/[podcastId].tsx
 "use client";
-import { useRouter, useParams } from "next/navigation"; // Import useParams
+
+import { useRouter, useParams } from "next/navigation";
 import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react"; // Ensure you import useQuery
+import { useQuery } from "convex/react";
 import PodcastForm from "@/components/PodcastForm";
 import { Id } from "@/convex/_generated/dataModel";
 
 const UpdatePodcastPage = () => {
   const router = useRouter();
-  const { podcastId } = useParams(); // Use useParams to get the podcastId
+  const { podcastId } = useParams();
 
   // Handle the case where podcastId is undefined
   if (!podcastId) {
     return <p>Podcast ID is missing. Please check the URL.</p>;
   }
 
-  // Use useQuery to fetch podcast data
+  // Fetch podcast data
   const podcastData = useQuery(api.podcast.getPodcastById, {
-    podcastId: podcastId as Id<"podcasts">, // Type assertion to Id<"podcasts">
+    podcastId: podcastId as Id<"podcasts">,
   });
 
-  const isLoading = podcastData === undefined; // Check loading state
+  const isLoading = !podcastData; // Loading state
   const error = podcastData === null ? new Error("Podcast not found.") : null;
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error fetching podcast: {error.message}</p>;
-  if (!podcastData) return <p>Podcast not found.</p>;
+
+  const existingData = {
+    podcastId: podcastData._id,
+    audioUrl: podcastData.audioUrl || "",
+    imageUrl: podcastData.imageUrl || "",
+    podcastTitle: podcastData.podcastTitle || "",
+    podcastDescription: podcastData.podcastDescription || "",
+    voicePrompt: podcastData.voicePrompt || "",
+    imagePrompt: podcastData.imagePrompt || "",
+    voiceType: podcastData.voiceType || "",
+    categoryType: podcastData.categoryType || "",
+    views: podcastData.views || 0,
+    audioDuration: podcastData.audioDuration || 0,
+  };
 
   return (
     <div>
       <h1>Update Podcast</h1>
-      <PodcastForm existingData={podcastData} />
+      <PodcastForm existingData={existingData} />
     </div>
   );
 };
