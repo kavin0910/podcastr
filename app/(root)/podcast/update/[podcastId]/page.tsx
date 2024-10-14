@@ -17,7 +17,7 @@ const UpdatePodcastPage = () => {
 
   // Fetch podcast data
   const podcastData = useQuery(api.podcast.getPodcastById, {
-    podcastId: podcastId as Id<"podcasts">,
+    podcastId: podcastId as Id<"podcasts">, // Ensure podcastId is correctly casted
   });
 
   const isLoading = !podcastData; // Loading state
