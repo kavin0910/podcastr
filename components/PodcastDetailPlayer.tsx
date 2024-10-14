@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { api } from "@/convex/_generated/api";
-import { useAudio } from '@/providers/AudioProvider';
+import { useAudio } from "@/providers/AudioProvider";
 import { PodcastDetailPlayerProps } from "@/types";
 
 import LoaderSpinner from "./LoaderSpinner";
@@ -28,6 +28,7 @@ const PodcastDetailPlayer = ({
   const { setAudio } = useAudio();
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const deletePodcast = useMutation(api.podcast.deletePodcast);
 
   const handleDelete = async () => {
@@ -54,6 +55,13 @@ const PodcastDetailPlayer = ({
       author,
       podcastId,
     });
+  };
+
+  const handleUpdate = () => {
+    setIsUpdating(true); // Set state to true when update starts
+    // Simulate API call or redirection here
+    router.push(`/podcast/update/${podcastId}`);
+    setIsUpdating(false); // Set state back to false once update is done
   };
 
   if (!imageUrl || !authorImageUrl) return <LoaderSpinner />;
@@ -104,32 +112,52 @@ const PodcastDetailPlayer = ({
           </Button>
         </div>
       </div>
-      {isOwner && (
-        <div className="relative mt-2">
-          <Image
-            src="/icons/three-dots.svg"
-            width={20}
-            height={30}
-            alt="Three dots icon"
-            className="cursor-pointer"
-            onClick={() => setIsDeleting((prev) => !prev)}
-          />
-          {isDeleting && (
-            <div
-              className="absolute -left-32 -top-2 z-10 flex w-32 cursor-pointer justify-center gap-2 rounded-md bg-black-6 py-1.5 hover:bg-black-2"
-              onClick={handleDelete}
-            >
-              <Image
-                src="/icons/delete.svg"
-                width={16}
-                height={16}
-                alt="Delete icon"
-              />
-              <h2 className="text-16 font-normal text-white-1">Delete</h2>
-            </div>
-          )}
-        </div>
-      )}
+      <div>
+        {isOwner && (
+          <div className="relative mt-2">
+            <Image
+              src="/icons/three-dots.svg"
+              width={20}
+              height={30}
+              alt="Three dots icon"
+              className="cursor-pointer"
+              onClick={() => setIsDeleting((prev) => !prev)}
+            />
+            {isDeleting && (
+              <div className="absolute -left-32 -top-2 z-10 flex flex-col w-32 cursor-pointer justify-center gap-2 rounded-md bg-black-6 py-1.5 hover:bg-black-4 hover:shadow-lg transition-all duration-200">
+                {/* Delete Button */}
+                <div
+                  className="flex items-center gap-2 rounded-md p-2 cursor-pointer hover:shadow-md hover:bg-red-500 transition-colors duration-200"
+                  onClick={handleDelete}
+                >
+                  <Image
+                    src="/icons/delete.svg"
+                    width={16}
+                    height={16}
+                    alt="Delete icon"
+                  />
+                  <h2 className="text-16 font-normal text-white-1">Delete</h2>
+                </div>
+                <div
+                  className="flex items-center gap-2 rounded-md p-2 cursor-pointer hover:shadow-md hover:bg-blue-500 transition-colors duration-200"
+                  onClick={handleUpdate}
+                >
+                  <Image
+                    src="/icons/edit.svg"
+                    width={16}
+                    height={16}
+                    alt="Edit icon"
+                  />
+                  <h2 className="text-16 font-normal text-white-1">
+                    {isUpdating ? "Updating..." : "Update"}{" "}
+                    {/* Conditionally show update state */}
+                  </h2>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
