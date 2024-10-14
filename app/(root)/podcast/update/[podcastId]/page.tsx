@@ -1,10 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
 import PodcastForm from "@/components/PodcastForm";
 import { Id } from "@/convex/_generated/dataModel";
+import { useQuery } from "convex/react"; // Import the useQuery hook
 
 const UpdatePodcastPage = () => {
   const router = useRouter();
@@ -18,10 +19,14 @@ const UpdatePodcastPage = () => {
   // Ensure podcastId is of type Id<"podcasts">
   const podcastIdTyped = podcastId as Id<"podcasts">;
 
-  // Always call the query
-  const podcastData = useQuery(api.podcast.getPodcastById, {
-    podcastId: podcastIdTyped,
-  });
+  // Define your condition to skip the query
+  const skip = !podcastIdTyped; // Example condition to skip the query
+
+  // Use useQuery with conditional fetching
+  const podcastData = useQuery(
+    api.podcast.getPodcastById, // Always provide the query function
+    skip ? "skip" : { podcastId: podcastIdTyped } // Use "skip" instead of undefined
+  );
 
   // Loading state
   if (podcastData === undefined) {
