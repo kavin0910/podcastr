@@ -2,6 +2,20 @@ import { ConvexError, v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
 
+// Define the interface for updates
+interface PodcastUpdate {
+  podcastTitle?: string;
+  podcastDescription?: string;
+  audioUrl?: string;
+  imageUrl?: string;
+  voicePrompt?: string;
+  imagePrompt?: string;
+  voiceType?: string;
+  categoryType?: string;
+  views?: number;
+  audioDuration?: number;
+}
+
 // create podcast mutation
 export const createPodcast = mutation({
   args: {
@@ -52,6 +66,53 @@ export const createPodcast = mutation({
       authorImageUrl: user[0].imageUrl,
       audioDuration: args.audioDuration,
     });
+  },
+});
+
+export const updatePodcast = mutation({
+  args: {
+    podcastId: v.id("podcasts"),
+    podcastTitle: v.string(),
+    podcastDescription: v.string(),
+    audioUrl: v.string(),
+    imageUrl: v.string(),
+    voicePrompt: v.string(),
+    imagePrompt: v.string(),
+    voiceType: v.string(),
+    categoryType: v.string(),
+    views: v.number(),
+    audioDuration: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError("User not authenticated");
+    }
+
+    const podcast = await ctx.db.get(args.podcastId);
+
+    if (!podcast) {
+      throw new ConvexError("Podcast not found");
+    }
+
+    const updates: PodcastUpdate = {};
+
+    // Only add fields that are present in args
+    if (args.podcastTitle) updates.podcastTitle = args.podcastTitle;
+    if (args.podcastDescription)
+      updates.podcastDescription = args.podcastDescription;
+    if (args.audioUrl) updates.audioUrl = args.audioUrl;
+    if (args.imageUrl) updates.imageUrl = args.imageUrl;
+    if (args.voicePrompt) updates.voicePrompt = args.voicePrompt;
+    if (args.imagePrompt) updates.imagePrompt = args.imagePrompt;
+    if (args.voiceType) updates.voiceType = args.voiceType;
+    if (args.categoryType) updates.categoryType = args.categoryType;
+    if (args.views !== undefined) updates.views = args.views; // allow for setting views to 0
+    if (args.audioDuration) updates.audioDuration = args.audioDuration;
+
+    // Update the podcast in the database
+    return await ctx.db.patch(args.podcastId, updates);
   },
 });
 

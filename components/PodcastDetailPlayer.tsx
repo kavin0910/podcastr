@@ -30,6 +30,7 @@ const PodcastDetailPlayer = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const deletePodcast = useMutation(api.podcast.deletePodcast);
+  const updatePodcast = useMutation(api.podcast.updatePodcast);
 
   const handleDelete = async () => {
     try {
