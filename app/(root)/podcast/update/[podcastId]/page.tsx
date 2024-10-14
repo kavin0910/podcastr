@@ -20,12 +20,12 @@ const UpdatePodcastPage = () => {
     podcastId: podcastId as Id<"podcasts">,
   });
 
-  // Set loading and error states based on the podcastData response
-  const isLoading = podcastData === undefined; // Loading state
-  const error = podcastData === null ? new Error("Podcast not found.") : null;
+  //   // Set loading and error states based on the podcastData response
+  //   const isLoading = podcastData === undefined; // Loading state
+  //   const error = podcastData === null ? new Error("Podcast not found.") : null;
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error fetching podcast: {error.message}</p>;
+  //   if (isLoading) return <p>Loading...</p>;
+  //   if (error) return <p>Error fetching podcast: {error.message}</p>;
 
   // Check if podcastData is not null before accessing its properties
   if (!podcastData) {
