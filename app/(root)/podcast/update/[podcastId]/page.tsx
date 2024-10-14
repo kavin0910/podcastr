@@ -15,17 +15,24 @@ const UpdatePodcastPage = () => {
     return <p>Podcast ID is missing. Please check the URL.</p>;
   }
 
-  // Fetch podcast data
+  // Always call the query
   const podcastData = useQuery(api.podcast.getPodcastById, {
-    podcastId: podcastId as Id<"podcasts">, // Ensure podcastId is correctly casted
+    podcastId: podcastId as Id<"podcasts">,
   });
 
-  const isLoading = !podcastData; // Loading state
+  // Set loading and error states based on the podcastData response
+  const isLoading = podcastData === undefined; // Loading state
   const error = podcastData === null ? new Error("Podcast not found.") : null;
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error fetching podcast: {error.message}</p>;
 
+  // Check if podcastData is not null before accessing its properties
+  if (!podcastData) {
+    return <p>Podcast not found. Please check the ID.</p>;
+  }
+
+  // Construct existingData from the fetched podcastData
   const existingData = {
     podcastId: podcastData._id,
     audioUrl: podcastData.audioUrl || "",
