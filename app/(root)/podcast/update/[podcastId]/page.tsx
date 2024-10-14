@@ -10,14 +10,17 @@ const UpdatePodcastPage = () => {
   const router = useRouter();
   const { podcastId } = useParams();
 
-  // Handle the case where podcastId is undefined
+  // Early return if podcastId is undefined
   if (!podcastId) {
     return <p>Podcast ID is missing. Please check the URL.</p>;
   }
 
+  // Ensure podcastId is of type Id<"podcasts">
+  const podcastIdTyped = podcastId as Id<"podcasts">;
+
   // Always call the query
   const podcastData = useQuery(api.podcast.getPodcastById, {
-    podcastId: podcastId as Id<"podcasts">,
+    podcastId: podcastIdTyped,
   });
 
   // Loading state
@@ -25,7 +28,7 @@ const UpdatePodcastPage = () => {
     return <p>Loading...</p>;
   }
 
-  // Error state handling (if needed)
+  // Error state handling
   if (podcastData === null) {
     return <p>Podcast not found. Please check the ID.</p>;
   }
