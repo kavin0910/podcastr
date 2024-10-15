@@ -1,64 +1,65 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { api } from "@/convex/_generated/api";
+import EmptyState from "@/components/EmptyState";
+import LoaderSpinner from "@/components/LoaderSpinner";
 import PodcastForm from "@/components/PodcastForm";
+import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { useQuery } from "convex/react"; // Import the useQuery hook
+import { useUser } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
 
-const UpdatePodcastPage = () => {
-  const router = useRouter();
-  const { podcastId } = useParams();
+const UpdatePodcast = ({
+  params: { podcastId },
+}: {
+  params: { podcastId: Id<"podcasts"> };
+}) => {
+  const { user } = useUser();
 
-  // Early return if podcastId is undefined
-  if (!podcastId) {
-    return <p>Podcast ID is missing. Please check the URL.</p>;
-  }
-
-  // Ensure podcastId is of type Id<"podcasts">
-  const podcastIdTyped = podcastId as Id<"podcasts">;
-
-  // Define your condition to skip the query
-  const skip = !podcastIdTyped; // Example condition to skip the query
-
-  // Use useQuery with conditional fetching
-  const podcastData = useQuery(
-    api.podcast.getPodcastById, // Always provide the query function
-    skip ? "skip" : { podcastId: podcastIdTyped } // Use "skip" instead of undefined
-  );
+  // Fetch podcast data using useQuery
+  const podcast = useQuery(api.podcast.getPodcastById, { podcastId });
 
   // Loading state
-  if (podcastData === undefined) {
-    return <p>Loading...</p>;
-  }
+  if (podcast === undefined) return <LoaderSpinner />;
 
   // Error state handling
-  if (podcastData === null) {
-    return <p>Podcast not found. Please check the ID.</p>;
+  if (podcast === null) {
+    return (
+      <EmptyState
+        title="Podcast not found. Please check the ID."
+        buttonText="Try Again"
+      />
+    );
   }
 
-  // Construct existingData from the fetched podcastData
-  const existingData = {
-    podcastId: podcastData._id,
-    audioUrl: podcastData.audioUrl || "",
-    imageUrl: podcastData.imageUrl || "",
-    podcastTitle: podcastData.podcastTitle || "",
-    podcastDescription: podcastData.podcastDescription || "",
-    voicePrompt: podcastData.voicePrompt || "",
-    imagePrompt: podcastData.imagePrompt || "",
-    voiceType: podcastData.voiceType || "",
-    categoryType: podcastData.categoryType || "",
-    views: podcastData.views || 0,
-    audioDuration: podcastData.audioDuration || 0,
-  };
+  // Check if the user is the owner of the podcast
+  const isOwner = user?.id === podcast.authorId;
 
   return (
-    <div>
-      <h1>Update Podcast</h1>
-      <PodcastForm existingData={existingData} />
-    </div>
+    <section className="flex w-full flex-col">
+      <h1 className="text-20 font-bold text-white-1">Update Podcast</h1>
+      {isOwner ? (
+        <PodcastForm
+          existingData={{
+            podcastId: podcast._id, // Map _id to podcastId
+            audioUrl: podcast.audioUrl || "",
+            imageUrl: podcast.imageUrl || "",
+            podcastTitle: podcast.podcastTitle || "",
+            podcastDescription: podcast.podcastDescription || "",
+            voicePrompt: podcast.voicePrompt || "",
+            imagePrompt: podcast.imagePrompt || "",
+            voiceType: podcast.voiceType || "",
+            categoryType: podcast.categoryType || "",
+            views: podcast.views,
+            audioDuration: podcast.audioDuration || 0,
+          }}
+        />
+      ) : (
+        <p className="text-red-500">
+          You do not have permission to update this podcast.
+        </p>
+      )}
+    </section>
   );
 };
 
-export default UpdatePodcastPage;
+export default UpdatePodcast;
