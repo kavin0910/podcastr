@@ -36,7 +36,6 @@ const UpdatePodcast = ({
 
   return (
     <section className="flex w-full flex-col">
-      <h1 className="text-20 font-bold text-white-1">Update Podcast</h1>
       {isOwner ? (
         <PodcastForm
           existingData={{
