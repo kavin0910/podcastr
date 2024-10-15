@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
 
 // Define the interface for updates
 interface PodcastUpdate {
@@ -14,6 +15,8 @@ interface PodcastUpdate {
   categoryType?: string;
   views?: number;
   audioDuration?: number;
+  audioStorageId?: Id<"_storage">; // Change to Id type
+  imageStorageId?: Id<"_storage">; // Change to Id type
 }
 
 // create podcast mutation
@@ -82,6 +85,8 @@ export const updatePodcast = mutation({
     categoryType: v.string(),
     views: v.number(),
     audioDuration: v.number(),
+    audioStorageId: v.id("_storage").optional(), // Make optional
+    imageStorageId: v.id("_storage").optional(), // Make optional
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -110,6 +115,8 @@ export const updatePodcast = mutation({
     if (args.categoryType) updates.categoryType = args.categoryType;
     if (args.views !== undefined) updates.views = args.views; // allow for setting views to 0
     if (args.audioDuration) updates.audioDuration = args.audioDuration;
+    updates.audioStorageId = args.audioStorageId as Id<"_storage">; // Casting or ensure it's the correct type
+    updates.imageStorageId = args.imageStorageId as Id<"_storage">;
 
     // Update the podcast in the database
     return await ctx.db.patch(args.podcastId, updates);

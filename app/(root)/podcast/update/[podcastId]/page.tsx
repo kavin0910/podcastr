@@ -18,6 +18,9 @@ const UpdatePodcast = ({
   // Fetch podcast data using useQuery
   const podcast = useQuery(api.podcast.getPodcastById, { podcastId });
 
+  console.log(podcast, "podcast");
+  
+
   // Loading state
   if (podcast === undefined) return <LoaderSpinner />;
 
@@ -50,6 +53,8 @@ const UpdatePodcast = ({
             categoryType: podcast.categoryType || "",
             views: podcast.views,
             audioDuration: podcast.audioDuration || 0,
+            audioStorageId: podcast.audioStorageId || undefined, // Add audioStorageId
+            imageStorageId: podcast.imageStorageId || undefined, // Add imageStorageId
           }}
         />
       ) : (
