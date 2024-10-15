@@ -105,6 +105,8 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
       categoryType: existingData.categoryType,
       views: existingData.views,
       audioDuration: existingData.audioDuration,
+      audioStorageId: existingData.audioStorageId,
+      imageStorageId: existingData.imageStorageId
     },
   });
 
@@ -225,7 +227,7 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
               </Label>
               <Select
                 onValueChange={(value) => setVoiceType(value)}
-                value={voiceType ? voiceType : form.watch("voiceType")}
+                value={voiceType || form.watch("voiceType")}
               >
                 <SelectTrigger
                   className={cn(
