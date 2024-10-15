@@ -190,12 +190,23 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
                 onValueChange={(value) => form.setValue("voiceType", value)}
                 value={form.watch("voiceType")}
               >
-                <SelectTrigger className="input-class">
-                  <SelectValue placeholder="Select AI Voice" />
+                <SelectTrigger
+                  className={cn(
+                    "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
+                  )}
+                >
+                  <SelectValue
+                    placeholder="Select AI Voice"
+                    className="placeholder:text-gray-1"
+                  />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="text-16 border-none bg-black-1 font-bold text-white-1 focus:ring-offset-orange-1">
                   {voiceCategories.map((category) => (
-                    <SelectItem key={category} value={category}>
+                    <SelectItem
+                      key={category}
+                      value={category}
+                      className="capitalize focus:ring-offset-orange-1"
+                    >
                       {category}
                     </SelectItem>
                   ))}
@@ -233,12 +244,23 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
                 onValueChange={(value) => form.setValue("categoryType", value)}
                 value={form.watch("categoryType")}
               >
-                <SelectTrigger className="input-class">
-                  <SelectValue placeholder="Select Category" />
+                <SelectTrigger
+                  className={cn(
+                    "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
+                  )}
+                >
+                  <SelectValue
+                    placeholder="Select Category"
+                    className="placeholder:text-gray-1"
+                  />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="text-16 border-none bg-black-1 font-bold text-white-1 focus:ring-offset-orange-1">
                   {podcastCategories.map((category) => (
-                    <SelectItem key={category} value={category}>
+                    <SelectItem
+                      key={category}
+                      value={category}
+                      className="capitalize focus:ring-offset-orange-1"
+                    >
                       {category}
                     </SelectItem>
                   ))}
