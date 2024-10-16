@@ -1,4 +1,4 @@
-import { useState } from "react"; // Import useState to manage loading state
+import { useEffect, useState } from "react"; // Import useState to manage loading state
 import { useMutation } from "convex/react"; // Import the mutation hook
 import { Id } from "@/convex/_generated/dataModel";
 import { useForm } from "react-hook-form";
@@ -93,6 +93,14 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
   // Use the mutation hook to update podcasts
   const updatePodcast = useMutation(api.podcast.updatePodcast);
 
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: "Podcast updated successfully!",
+      });
+    }
+  }, [isSuccess, toast]);
+
   const form = useForm({
     defaultValues: {
       podcastTitle: existingData.podcastTitle,
@@ -106,7 +114,7 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
       views: existingData.views,
       audioDuration: existingData.audioDuration,
       audioStorageId: existingData.audioStorageId,
-      imageStorageId: existingData.imageStorageId
+      imageStorageId: existingData.imageStorageId,
     },
   });
 
@@ -176,6 +184,8 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
     };
 
     try {
+      console.log(finalData, "finalData");
+
       await updatePodcast(finalData); // Call the API with complete data
       console.log("Podcast updated successfully.");
       setIsSuccess(true); // Set success state
@@ -226,8 +236,11 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
                 Select AI Voice
               </Label>
               <Select
-                onValueChange={(value) => setVoiceType(value)}
-                value={voiceType || form.watch("voiceType")}
+                onValueChange={(value) => {
+                  setVoiceType(value);
+                  form.setValue("voiceType", value);
+                }}
+                value={form.watch("voiceType") ?? voiceType ?? undefined}
               >
                 <SelectTrigger
                   className={cn(
@@ -335,9 +348,10 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
               setAudio={setAudioUrl}
               voiceType={voiceType!}
               audio={audioUrl}
-              voicePrompt={voicePrompt}
+              voicePrompt={voicePrompt || form.watch("voicePrompt")}
               setVoicePrompt={setVoicePrompt}
               setAudioDuration={setAudioDuration}
+              setFormValue={form.setValue}
             />
             <GenerateThumbnail
               setImage={setImageUrl}
@@ -348,20 +362,21 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
             />
           </div>
 
-          {isLoading ? (
-            <div className="flex items-center justify-center mt-4">
-              <Loader size={20} className="animate-spin mr-2" />
-              Updating...
-            </div>
-          ) : (
-            <Button
-              type="submit"
-              className="text-16 w-full bg-orange-1 py-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1"
-            >
-              Update Podcast
-            </Button>
-          )}
-
+          <div className="mt-5 w-full">
+            {isLoading ? (
+              <div className="flex items-center justify-center mt-4">
+                <Loader size={20} className="animate-spin mr-2" />
+                Updating...
+              </div>
+            ) : (
+              <Button
+                type="submit"
+                className="text-16 w-full bg-orange-1 py-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1"
+              >
+                Update Podcast
+              </Button>
+            )}
+          </div>
           {/* Success message */}
           {isSuccess && (
             <p className="mt-4 text-green-500 text-center">
