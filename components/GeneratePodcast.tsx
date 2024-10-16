@@ -28,8 +28,6 @@ const useGeneratePodcast = ({
   const getAudioUrl = useMutation(api.podcast.getUrl);
 
   const generatePodcast = async () => {
-    console.log("voiceType:", voiceType);
-    console.log("voicePrompt:", voicePrompt);
     setIsGenerating(true);
     setAudio("");
 
@@ -84,7 +82,6 @@ const useGeneratePodcast = ({
 
 const GeneratePodcast = (props: GeneratePodcastProps) => {
   const { isGenerating, generatePodcast } = useGeneratePodcast(props);
-  console.log(props.audio, "props");
   const [localVoicePrompt, setLocalVoicePrompt] = useState(props.voicePrompt); // Local state for voice prompt
 
   useEffect(() => {

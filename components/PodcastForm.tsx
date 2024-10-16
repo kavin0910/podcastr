@@ -184,8 +184,6 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
     };
 
     try {
-      console.log(finalData, "finalData");
-
       await updatePodcast(finalData); // Call the API with complete data
       console.log("Podcast updated successfully.");
       setIsSuccess(true); // Set success state
