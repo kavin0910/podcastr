@@ -50,6 +50,8 @@ const UpdatePodcast = ({
             categoryType: podcast.categoryType || "",
             views: podcast.views,
             audioDuration: podcast.audioDuration || 0,
+            audioStorageId: podcast.audioStorageId || undefined, // Add audioStorageId
+            imageStorageId: podcast.imageStorageId || undefined, // Add imageStorageId
           }}
         />
       ) : (

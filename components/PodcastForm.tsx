@@ -1,4 +1,4 @@
-import { useState } from "react"; // Import useState to manage loading state
+import { useEffect, useState } from "react"; // Import useState to manage loading state
 import { useMutation } from "convex/react"; // Import the mutation hook
 import { Id } from "@/convex/_generated/dataModel";
 import { useForm } from "react-hook-form";
@@ -25,6 +25,9 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { api } from "@/convex/_generated/api";
 import { Loader } from "lucide-react";
+import GeneratePodcast from "./GeneratePodcast";
+import GenerateThumbnail from "./GenerateThumbnail";
+import { useToast } from "./ui/use-toast";
 
 interface PodcastFormProps {
   existingData: {
@@ -39,6 +42,8 @@ interface PodcastFormProps {
     categoryType: string;
     views: number;
     audioDuration: number;
+    audioStorageId?: Id<"_storage">;
+    imageStorageId?: Id<"_storage">;
   };
 }
 
@@ -65,8 +70,36 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const [isSuccess, setIsSuccess] = useState(false); // Success state
 
+  const [imagePrompt, setImagePrompt] = useState("");
+  const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(
+    null
+  );
+  const [imageUrl, setImageUrl] = useState("");
+
+  const [audioUrl, setAudioUrl] = useState("");
+  const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
+    null
+  );
+  const [audioDuration, setAudioDuration] = useState(0);
+
+  const [voiceType, setVoiceType] = useState<string | null>(null);
+  const [categoryType, setCategoryType] = useState<string | null>(null);
+
+  const [voicePrompt, setVoicePrompt] = useState("");
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+
   // Use the mutation hook to update podcasts
   const updatePodcast = useMutation(api.podcast.updatePodcast);
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: "Podcast updated successfully!",
+      });
+    }
+  }, [isSuccess, toast]);
 
   const form = useForm({
     defaultValues: {
@@ -80,6 +113,8 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
       categoryType: existingData.categoryType,
       views: existingData.views,
       audioDuration: existingData.audioDuration,
+      audioStorageId: existingData.audioStorageId,
+      imageStorageId: existingData.imageStorageId,
     },
   });
 
@@ -120,6 +155,16 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
       changedFields.audioDuration = formData.audioDuration;
     }
 
+    // Ensure to check for optional fields
+    if (formData.audioStorageId !== existingData.audioStorageId) {
+      changedFields.audioStorageId =
+        formData.audioStorageId ?? existingData.audioStorageId;
+    }
+    if (formData.imageStorageId !== existingData.imageStorageId) {
+      changedFields.imageStorageId =
+        formData.imageStorageId ?? existingData.imageStorageId;
+    }
+
     // Ensure all required fields are present by merging existingData with changedFields
     const finalData = {
       podcastId: existingData.podcastId,
@@ -134,6 +179,8 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
       categoryType: formData.categoryType ?? existingData.categoryType,
       views: formData.views ?? existingData.views,
       audioDuration: formData.audioDuration ?? existingData.audioDuration,
+      audioStorageId: formData.audioStorageId ?? existingData.audioStorageId, // Ensure it's included
+      imageStorageId: formData.imageStorageId ?? existingData.imageStorageId, // Ensure
     };
 
     try {
@@ -141,7 +188,7 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
       console.log("Podcast updated successfully.");
       setIsSuccess(true); // Set success state
       setTimeout(() => {
-        router.push("/"); // Redirect to podcasts page
+        // router.push("/"); // Redirect to podcasts page
       }, 2000); // Optional: Delay to show the message before redirecting
     } catch (error) {
       console.error("Error updating podcast:", error);
@@ -187,8 +234,11 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
                 Select AI Voice
               </Label>
               <Select
-                onValueChange={(value) => form.setValue("voiceType", value)}
-                value={form.watch("voiceType")}
+                onValueChange={(value) => {
+                  setVoiceType(value);
+                  form.setValue("voiceType", value);
+                }}
+                value={form.watch("voiceType") ?? voiceType ?? undefined}
               >
                 <SelectTrigger
                   className={cn(
@@ -269,7 +319,7 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
             </div>
 
             {/* Voice Prompt Field */}
-            <FormField
+            {/* <FormField
               control={form.control}
               name="voicePrompt" // New field for Voice Prompt
               render={({ field }) => (
@@ -287,22 +337,44 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
                   <FormMessage className="text-white-1" />
                 </FormItem>
               )}
+            /> */}
+          </div>
+
+          <div className="flex flex-col pt-10">
+            <GeneratePodcast
+              setAudioStorageId={setAudioStorageId}
+              setAudio={setAudioUrl}
+              voiceType={voiceType!}
+              audio={audioUrl}
+              voicePrompt={voicePrompt || form.watch("voicePrompt")}
+              setVoicePrompt={setVoicePrompt}
+              setAudioDuration={setAudioDuration}
+              setFormValue={form.setValue}
+            />
+            <GenerateThumbnail
+              setImage={setImageUrl}
+              setImageStorageId={setImageStorageId}
+              image={imageUrl}
+              imagePrompt={imagePrompt}
+              setImagePrompt={setImagePrompt}
             />
           </div>
-          {isLoading ? (
-            <div className="flex items-center justify-center mt-4">
-              <Loader size={20} className="animate-spin mr-2" />
-              Updating...
-            </div>
-          ) : (
-            <Button
-              type="submit"
-              className="text-16 w-full bg-orange-1 py-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1"
-            >
-              Update Podcast
-            </Button>
-          )}
 
+          <div className="mt-5 w-full">
+            {isLoading ? (
+              <div className="flex items-center justify-center mt-4">
+                <Loader size={20} className="animate-spin mr-2" />
+                Updating...
+              </div>
+            ) : (
+              <Button
+                type="submit"
+                className="text-16 w-full bg-orange-1 py-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1"
+              >
+                Update Podcast
+              </Button>
+            )}
+          </div>
           {/* Success message */}
           {isSuccess && (
             <p className="mt-4 text-green-500 text-center">

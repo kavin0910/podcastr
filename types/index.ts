@@ -3,6 +3,7 @@
 import { Dispatch, SetStateAction } from "react";
 
 import { Id } from "@/convex/_generated/dataModel";
+import { UseFormSetValue } from "react-hook-form";
 
 export interface EmptyStateProps {
   title: string;
@@ -59,6 +60,7 @@ export interface GeneratePodcastProps {
   voicePrompt: string;
   setVoicePrompt: Dispatch<SetStateAction<string>>;
   setAudioDuration: Dispatch<SetStateAction<number>>;
+  setFormValue: UseFormSetValue<any>; // Add setFormValue here
 }
 
 export interface GenerateThumbnailProps {
