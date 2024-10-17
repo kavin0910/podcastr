@@ -344,7 +344,7 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
             <GeneratePodcast
               setAudioStorageId={setAudioStorageId}
               setAudio={setAudioUrl}
-              voiceType={voiceType!}
+              voiceType={voiceType! || form.watch("voiceType")}
               audio={audioUrl}
               voicePrompt={voicePrompt || form.watch("voicePrompt")}
               setVoicePrompt={setVoicePrompt}
