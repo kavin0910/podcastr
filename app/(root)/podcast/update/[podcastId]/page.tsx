@@ -18,9 +18,6 @@ const UpdatePodcast = ({
   // Fetch podcast data using useQuery
   const podcast = useQuery(api.podcast.getPodcastById, { podcastId });
 
-  console.log(podcast, "podcast");
-  
-
   // Loading state
   if (podcast === undefined) return <LoaderSpinner />;
 

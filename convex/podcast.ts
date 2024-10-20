@@ -85,8 +85,8 @@ export const updatePodcast = mutation({
     categoryType: v.string(),
     views: v.number(),
     audioDuration: v.number(),
-    audioStorageId: v.id("_storage").optional(), // Make optional
-    imageStorageId: v.id("_storage").optional(), // Make optional
+    audioStorageId: v.id("_storage"), // Make optional
+    imageStorageId: v.id("_storage"), // Make optional
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
