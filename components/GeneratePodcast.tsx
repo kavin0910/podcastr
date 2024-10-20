@@ -1,5 +1,5 @@
 import { GeneratePodcastProps } from "@/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -82,7 +82,18 @@ const useGeneratePodcast = ({
 
 const GeneratePodcast = (props: GeneratePodcastProps) => {
   const { isGenerating, generatePodcast } = useGeneratePodcast(props);
-  
+  const [localVoicePrompt, setLocalVoicePrompt] = useState(props.voicePrompt); // Local state for voice prompt
+
+  useEffect(() => {
+    setLocalVoicePrompt(props.voicePrompt);
+  }, [props.voicePrompt]);
+
+  const handleVoicePromptChange = (e: any) => {
+    const newValue = e.target.value;
+    setLocalVoicePrompt(newValue);
+    props.setVoicePrompt(newValue);
+    props.setFormValue?.("voicePrompt", newValue);
+  };
 
   return (
     <div>
@@ -94,8 +105,8 @@ const GeneratePodcast = (props: GeneratePodcastProps) => {
           className="input-class font-light focus-visible:ring-offset-orange-1"
           placeholder="Provide text to generate audio"
           rows={5}
-          value={props.voicePrompt}
-          onChange={(e) => props.setVoicePrompt(e.target.value)}
+          value={localVoicePrompt}
+          onChange={handleVoicePromptChange}
         />
       </div>
       <div className="mt-5 w-full max-w-[200px]">
