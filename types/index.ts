@@ -60,7 +60,7 @@ export interface GeneratePodcastProps {
   voicePrompt: string;
   setVoicePrompt: Dispatch<SetStateAction<string>>;
   setAudioDuration: Dispatch<SetStateAction<number>>;
-  setFormValue: UseFormSetValue<any>; // Add setFormValue here
+  setFormValue?: UseFormSetValue<any>; // Add setFormValue here
 }
 
 export interface GenerateThumbnailProps {
