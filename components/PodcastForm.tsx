@@ -184,8 +184,7 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
     };
 
     try {
-      await updatePodcast(finalData); // Call the API with complete data
-      console.log("Podcast updated successfully.");
+      await updatePodcast(finalData);
       setIsSuccess(true); // Set success state
       setTimeout(() => {
         // router.push("/"); // Redirect to podcasts page
