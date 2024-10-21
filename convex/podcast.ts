@@ -289,3 +289,32 @@ export const deletePodcast = mutation({
     return await ctx.db.delete(args.podcastId);
   },
 });
+
+// this query will get all the podcasts created by the authenticated user.
+export const getUserPodcasts = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    console.log("User Identity:", identity); // Log the identity for debugging
+
+    if (!identity) {
+      throw new ConvexError("User not authenticated");
+    }
+
+    // Fetch the user by fullName instead of email
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), identity.email)) // Assuming fullName is accessible
+      .collect();
+    console.log("Users Found:", user); // Log the user results for debugging
+
+    if (user.length === 0) {
+      throw new ConvexError("User not found");
+    }
+
+    // Fetch podcasts based on the user's ID
+    return await ctx.db
+      .query("podcasts")
+      .filter((q) => q.eq(q.field("user"), user[0]._id)) // Assuming `user` field in podcasts references the user's ID
+      .collect();
+  },
+});
