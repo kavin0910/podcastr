@@ -86,7 +86,6 @@ const CreatePodcast = () => {
 
   const createPodcast = useMutation(api.podcast.createPodcast);
   const getUserPodcasts = useQuery(api.podcast.getUserPodcasts);
-  // console.log(getUserPodcasts, "getUserPodcasts");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -98,37 +97,31 @@ const CreatePodcast = () => {
 
   const [podcastLimitExceeded, setPodcastLimitExceeded] = useState(false);
 
-  // useEffect(() => {
-  //   if (user) {
-  //     // Ensure getUserPodcasts is populated and the user email matches
-  //     const emailMatches =
-  //       user?.primaryEmailAddress?.emailAddress === "mittalmuskan758@gmail.com"; // Replace with the email you expect
-  //     console.log(emailMatches, "emailMatches");
+  useEffect(() => {
+    if (user) {
+      // Ensure getUserPodcasts is populated and the user email matches
+      const emailMatches =
+        user?.primaryEmailAddress?.emailAddress === "mittalmuskan758@gmail.com"; // Replace with the email you expect
 
-  //     const podcastsExist = getUserPodcasts && getUserPodcasts.length >= 1;
-  //     console.log(podcastsExist, "podcastsExist");
+      const podcastsExist = getUserPodcasts && getUserPodcasts.length >= 1;
 
-  //     if (podcastsExist && !emailMatches) {
-  //       console.log("1111");
-        
-  //       setPodcastLimitExceeded(true);
-  //     } else {
-  //       console.log("2222");
-        
-  //       setPodcastLimitExceeded(false);
-  //     }
-  //   }
-  // }, [user, getUserPodcasts]);
+      if (podcastsExist && !emailMatches) {
+        setPodcastLimitExceeded(true);
+      } else {
+        setPodcastLimitExceeded(false);
+      }
+    }
+  }, [user, getUserPodcasts]);
 
   // 2. Define a submit handler.
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    // if (podcastLimitExceeded) {
-    //   toast({
-    //     title: "Limit exhausted",
-    //     description: "You can only create 1 podcast.",
-    //   });
-    //   return;
-    // }
+    if (podcastLimitExceeded) {
+      toast({
+        title: "Limit exhausted",
+        description: "You can only create 1 podcast.",
+      });
+      return;
+    }
 
     try {
       setIsSubmitting(true);
