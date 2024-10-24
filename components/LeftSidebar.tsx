@@ -29,14 +29,29 @@ const LeftSidebar = () => {
         {sidebarLinks.map(({ route, label, imgURL }) => {
           const isActive = pathname === route || pathname.startsWith(`${route}/`);
 
-          return <Link href={route} key={label} className={cn("flex gap-3 items-center py-4 max-lg:px-4 justify-center lg:justify-start", {
-            'bg-nav-focus border-r-4 border-orange-1': isActive
-          })}>
-            <Image src={imgURL} alt={label} width={24} height={24} />
-            <p>{label}</p>
-          </Link>
+          return (
+            // Conditionally render "Create Podcast" link only for signed-in users
+            (label === "Create Podcast" ? (
+              <SignedIn key={label}>
+                <Link href={route} className={cn("flex gap-3 items-center py-4 max-lg:px-4 justify-center lg:justify-start", {
+                  'bg-nav-focus border-r-4 border-orange-1': isActive
+                })}>
+                  <Image src={imgURL} alt={label} width={24} height={24} />
+                  <p>{label}</p>
+                </Link>
+              </SignedIn>
+            ) : (
+              <Link href={route} key={label} className={cn("flex gap-3 items-center py-4 max-lg:px-4 justify-center lg:justify-start", {
+                'bg-nav-focus border-r-4 border-orange-1': isActive
+              })}>
+                <Image src={imgURL} alt={label} width={24} height={24} />
+                <p>{label}</p>
+              </Link>
+            ))
+          );
         })}
-      </nav>  
+      </nav>
+
       <SignedOut>
         <div className="flex-center w-full pb-14 max-lg:px-4 lg:pr-8">
           <Button asChild className="text-16 w-full bg-orange-1 font-extrabold">
@@ -52,7 +67,7 @@ const LeftSidebar = () => {
         </div>
       </SignedIn>
     </section>
-  )
-}
+  );
+};
 
-export default LeftSidebar
+export default LeftSidebar;
