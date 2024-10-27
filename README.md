@@ -91,6 +91,18 @@ Before you begin, ensure you have met the following requirements:
 
     Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+   ### Project Structure
+
+```bash
+.
+├── components       # Reusable components (e.g., PodcastCard, Layout, etc.)
+├── pages            # Application routes (Home, Discover, Create, etc.)
+├── public           # Static assets (images, icons, etc.)
+├── styles           # Tailwind CSS configuration and global styles
+├── utils            # Utility functions and helpers
+└── README.md        # Project documentation
+```
+
 ## Usage
 
 ### Text-to-Voice
