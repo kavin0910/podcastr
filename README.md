@@ -31,6 +31,11 @@ Podcastr is designed for podcast creators who want to enhance their production q
 - **AI-Generated Images**: Automatically generate custom images for podcast episodes, improving visual appeal and audience engagement.
 - **Built with Next.js 14**: Leveraging the latest features of Next.js for optimal performance and scalability.
 - **Powered by Convex**: Utilizing Convex for efficient and secure data management and AI model integration.
+- **Podcast Discovery**: Users can explore a wide variety of podcasts from different genres.
+- **Create Podcasts**: Registered users can create, edit, and upload their podcasts.
+- **Podcast Playback**: Seamless integration with audio players for an engaging listening experience.
+- **User Authentication**: Sign up and log in functionality to manage podcasts.
+- **Responsive Design**: Optimized for both desktop and mobile experiences.
 
 ## Getting Started
 
