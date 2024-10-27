@@ -36,6 +36,13 @@ Podcastr is designed for podcast creators who want to enhance their production q
 - **Podcast Playback**: Seamless integration with audio players for an engaging listening experience.
 - **User Authentication**: Sign up and log in functionality to manage podcasts.
 - **Responsive Design**: Optimized for both desktop and mobile experiences.
+- 
+## Tech Stack
+
+- **Frontend**: React, Next.js, Tailwind CSS
+- **Backend**: Node.js, Express, MongoDB
+- **Authentication**: Clerk for user authentication
+- **Hosting**: Vercel for frontend deployment, Convex for backend storage and API management
 
 ## Getting Started
 
