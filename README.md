@@ -110,14 +110,14 @@ Before you begin, ensure you have met the following requirements:
 1. Navigate to the Text-to-Voice section in the application.
 2. Enter your text into the provided input field.
 3. Select the desired voices for different parts of the text.
-4. Click "Generate" to create the audio file.
+4. Click `Generate` button to create the audio file.
 5. Listen to or download the generated audio.
 
 ### AI-Generated Images
 
 1. Go to the AI-Generated Images section.
 2. Enter the description or keywords for the image you need.
-3. Click "Generate Image" to create a custom image for your podcast episode.
+3. Click `Generate Image` button to create a custom image for your podcast episode.
 4. View and download the generated image.
 
 ## Configuration
