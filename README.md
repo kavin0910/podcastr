@@ -136,15 +136,3 @@ Contributions are welcome! Please follow these steps to contribute:
 6. Open a pull request.
 
 Please ensure your code adheres to the existing code style and includes appropriate tests.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For support, please contact the development team at support@podcastr.ai or create an issue in the GitHub repository.
-
----
-
-Thank you for using Podcastr! We hope our application helps you create amazing podcasts with ease.
