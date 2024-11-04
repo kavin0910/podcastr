@@ -17,12 +17,7 @@ const RightSidebar = () => {
   const { user } = useUser();
   const topPodcasters = useQuery(api.users.getTopUserByPodcastCount);
   const router = useRouter();
-
   const { audio } = useAudio();
-
-  if (!user) {
-    return null;
-  }
 
   return (
     <section
@@ -30,28 +25,28 @@ const RightSidebar = () => {
         "h-[calc(100vh-140px)]": audio?.audioUrl,
       })}
     >
-      <SignedIn>
-        <Link href={`/profile/${user?.id}`} className="flex gap-3 pb-12">
-          <UserButton />
-          <div className="flex w-full items-center justify-between">
-            <h1 className="text-16 truncate font-semibold text-white-1">
-              {user?.firstName} {user?.lastName}
-            </h1>
-            <Image
-              src="/icons/right-arrow.svg"
-              alt="arrow"
-              width={24}
-              height={24}
-            />
-          </div>
-        </Link>
-      </SignedIn>
-      <section>
-        <Header headerTitle="Fans Like You" />
-        <Carousel fansLikeDetail={topPodcasters!} />
-      </section>
-      <section className="flex flex-col gap-8 pt-12">
-        <Header headerTitle="Top Podcastrs" />
+      {user && (
+        <SignedIn>
+          <Link href={`/profile/${user?.id}`} className="flex gap-3 pb-12">
+            <UserButton />
+            <div className="flex w-full items-center justify-between">
+              <h1 className="text-16 truncate font-semibold text-white-1">
+                {user?.firstName} {user?.lastName}
+              </h1>
+              <Image
+                src="/icons/right-arrow.svg"
+                alt="arrow"
+                width={24}
+                height={24}
+              />
+            </div>
+          </Link>
+        </SignedIn>
+      )}
+
+      {/* Top Podcasters Section - Always Visible */}
+      <section className="flex flex-col gap-8">
+        <Header headerTitle="Top Podcasters" />
         <div className="flex flex-col gap-6">
           {topPodcasters?.slice(0, 3).map((podcaster) => (
             <div
@@ -80,6 +75,14 @@ const RightSidebar = () => {
           ))}
         </div>
       </section>
+
+      {/* Fans Like You Section - Only Visible When Logged In */}
+      {user && (
+        <section className="pt-12">
+          <Header headerTitle="Fans Like You" />
+          <Carousel fansLikeDetail={topPodcasters!} />
+        </section>
+      )}
     </section>
   );
 };
