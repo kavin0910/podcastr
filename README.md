@@ -2,7 +2,7 @@
 
 ![image](https://github.com/user-attachments/assets/8f7264e0-cee9-4318-a203-390baf1ecffc)
 
-![image](https://github.com/user-attachments/assets/deda4ba5-6306-40f6-991d-b6df49f4ef32)
+![image](https://github.com/user-attachments/assets/cfedc6a4-58af-4b90-b990-3e3a869b1b2b)
 
 [Podcastr Live Website (https://podcastr-green.vercel.app)](https://podcastr-green.vercel.app/)
 
