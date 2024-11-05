@@ -109,11 +109,11 @@ const GenerateThumbnail = ({ setImage, setImageStorageId, image, imagePrompt, se
             <Button type="submit" className="text-16 bg-orange-1 py-4 font-bold text-white-1" onClick={generateImage}>
               {isImageLoading ? (
                 <>
-                  Generating
+                  Generating Image
                   <Loader size={20} className="animate-spin ml-2" />
                 </>
               ) : (
-                'Generate'
+                'Generate Image'
               )}
             </Button>
           </div>
