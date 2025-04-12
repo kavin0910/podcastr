@@ -13,10 +13,10 @@ import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 
 const PodcastDetailPlayer = ({
-  audioUrl,
+  audioUrl = "",
   podcastTitle,
   author,
-  imageUrl,
+  imageUrl = "",
   podcastId,
   imageStorageId,
   audioStorageId,
@@ -29,8 +29,7 @@ const PodcastDetailPlayer = ({
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const deletePodcast = useMutation(api.podcast.deletePodcast);
-  const updatePodcast = useMutation(api.podcast.updatePodcast);
+  const deletePodcast = useMutation(api.podcasts.deletePodcast);
 
   const handleDelete = async () => {
     try {
@@ -49,6 +48,12 @@ const PodcastDetailPlayer = ({
   };
 
   const handlePlay = () => {
+
+    if (!audioUrl) {
+      console.error("Audio URL is missing.");
+      return;  // Prevent setting invalid audio
+    }
+
     setAudio({
       title: podcastTitle,
       audioUrl,
@@ -139,21 +144,7 @@ const PodcastDetailPlayer = ({
                   />
                   <h2 className="text-16 font-normal text-white-1">Delete</h2>
                 </div>
-                <div
-                  className="flex items-center gap-2 rounded-md p-2 cursor-pointer hover:shadow-md hover:bg-blue-500 transition-colors duration-200"
-                  onClick={handleUpdate}
-                >
-                  <Image
-                    src="/icons/edit.svg"
-                    width={16}
-                    height={16}
-                    alt="Edit icon"
-                  />
-                  <h2 className="text-16 font-normal text-white-1">
-                    {isUpdating ? "Updating..." : "Update"}{" "}
-                    {/* Conditionally show update state */}
-                  </h2>
-                </div>
+                
               </div>
             )}
           </div>

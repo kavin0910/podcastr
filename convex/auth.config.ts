@@ -1,12 +1,10 @@
-// https://sweeping-liger-35.clerk.accounts.dev
-
-const authConfig = {
+const authConfig =  {
     providers: [
-        {
-            domain: "https://sweeping-liger-35.clerk.accounts.dev",
-            applicationID: "convex",
-        }
+      {
+        domain: "https://massive-squirrel-93.clerk.accounts.dev",
+        applicationID: "convex",
+      },
     ]
-}
+  };
 
 export default authConfig;

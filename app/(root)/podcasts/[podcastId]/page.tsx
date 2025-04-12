@@ -19,9 +19,9 @@ const PodcastDetails = ({
 }) => {
   const { user } = useUser();
 
-  const podcast = useQuery(api.podcast.getPodcastById, { podcastId });
+  const podcast = useQuery(api.podcasts.getPodcastById, { podcastId });
 
-  const similarPodcasts = useQuery(api.podcast.getPodcastByVoiceType, {
+  const similarPodcasts = useQuery(api.podcasts.getPodcastByVoiceType, {
     podcastId,
   });
 
@@ -47,7 +47,14 @@ const PodcastDetails = ({
       <PodcastDetailPlayer
         isOwner={isOwner}
         podcastId={podcast._id}
-        {...podcast}
+        audioUrl={podcast?.audioUrl}
+        podcastTitle={podcast?.podcastTitle}
+        author={podcast?.author}
+        imageUrl={podcast?.imageUrl}
+        imageStorageId={podcast?.imageStorageId}
+        audioStorageId={podcast?.audioStorageId}
+        authorId={podcast?.authorId}
+        authorImageUrl={podcast?.authorImageUrl}
       />
 
       <div className="flex flex-col gap-8">

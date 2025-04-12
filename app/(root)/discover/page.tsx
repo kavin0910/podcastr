@@ -1,13 +1,13 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import PodcastCard from '@/components/PodcastCard';
-import { useQuery, useConvex } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import LoaderSpinner from '@/components/LoaderSpinner';
+import PodcastCard from '@/components/PodcastCard';
+import { api } from "@/convex/_generated/api";
+import { useConvex, useQuery } from "convex/react";
+import { useEffect, useState } from 'react';
 
 const podcastCategories = [
-  "business", "technology", "comedy", "education", "hobbies", 
-  "government", "mental health", "family", "music", "politics", 
+  "business", "technology", "comedy", "education", "hobbies",
+  "government", "mental health", "family", "music", "politics",
   "spirituality", "culture", "arts"
 ];
 
@@ -32,7 +32,7 @@ const Discover = () => {
   const convex = useConvex();
   
   // Fetch trending podcasts using useQuery
-  const trendingPodcasts = useQuery(api.podcast.getTrendingPodcasts);
+  const trendingPodcasts = useQuery(api.podcasts.getTrendingPodcasts);
 
   // State to hold category podcasts
   const [categoryPodcasts, setCategoryPodcasts] = useState<CategoryPodcasts>({});
@@ -42,9 +42,11 @@ const Discover = () => {
     const fetchCategoryPodcasts = async () => {
       const categoriesData: CategoryPodcasts = {};
       for (const categoryType of podcastCategories) {
-        const { podcasts } = await convex.query(api.podcast.getPodcastByCategoryType, {
+        // Directly assign the query result to podcasts
+        const podcasts = await convex.query(api.podcasts.getPodcastByCategoryType, {
           categoryType,
         });
+        // Map the podcasts array to include a default imageUrl
         categoriesData[categoryType] = podcasts.map(podcast => ({
           ...podcast,
           imageUrl: podcast.imageUrl || '' // Provide a default value for imageUrl
@@ -52,9 +54,10 @@ const Discover = () => {
       }
       setCategoryPodcasts(categoriesData);
     };
-
+  
     fetchCategoryPodcasts();
-  }, [convex]);
+  }, [convex, podcastCategories]);  // Added podcastCategories as a dependency
+  
 
   // Render loading spinner if data is not ready
   if (!trendingPodcasts || podcastCategories.some(categoryType => !categoryPodcasts[categoryType])) {
@@ -65,10 +68,10 @@ const Discover = () => {
   return (
     <div className="mt-9 flex flex-col gap-9 md:overflow-hidden">
       <section className='flex flex-col gap-5'>
-        <h1 className="text-20 font-bold text-white-1">Trending Podcasts</h1>
+        <h1 className="text-24 font-extrabold bg-gradient-to-r from-[#D4D925] to-gray-300 text-transparent bg-clip-text drop-shadow-lg animate-pulse">Trending Podcasts</h1>
         <div className="podcast_grid">
           {trendingPodcasts?.map(({ _id, podcastTitle, podcastDescription, imageUrl }) => (
-            <PodcastCard 
+            <PodcastCard
               key={_id}
               imgUrl={imageUrl as string}
               title={podcastTitle}
@@ -84,8 +87,8 @@ const Discover = () => {
           <section key={categoryType} className='flex flex-col gap-5'>
             <h1 className="text-20 font-bold text-white-1">{capitalize(categoryType)} Podcasts</h1>
             <div className="podcast_grid">
-              {categoryPodcasts[categoryType].map(({ _id, podcastTitle, podcastDescription, imageUrl }) => (
-                <PodcastCard 
+              {categoryPodcasts[categoryType]?.map(({ _id, podcastTitle, podcastDescription, imageUrl }) => (
+                <PodcastCard
                   key={_id}
                   imgUrl={imageUrl as string}
                   title={podcastTitle}

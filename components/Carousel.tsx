@@ -43,7 +43,7 @@ const EmblaCarousel = ({ fansLikeDetail }: CarouselProps) => {
             className="carousel_box"
             onClick={() => router.push(`/podcasts/${item.podcast[0]?.podcastId}`)}
           >
-            <Image 
+            <Image
             src={item.imageUrl}
             alt="card"
             fill

@@ -23,7 +23,7 @@ const ConvexClerkProvider = ({ children }: { children: ReactNode }) => (
     <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
       {children}
     </ConvexProviderWithClerk>
-  </ClerkProvider> 
+  </ClerkProvider>
 )
 
 export default ConvexClerkProvider;

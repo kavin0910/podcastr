@@ -13,7 +13,7 @@ const Home = ({
 }: {
   searchParams: { search: string };
 }) => {
-  const podcastsData = useQuery(api.podcast.getPodcastBySearch, {
+  const podcastsData = useQuery(api.podcasts.getPodcastBySearch, {
     search: search || "",
   });
 
@@ -21,7 +21,7 @@ const Home = ({
     <div className="flex flex-col gap-9">
       <Searchbar />
       <div className="flex flex-col gap-9">
-        <h1 className="text-20 font-bold text-white-1">
+        <h1 className="text-24 font-extrabold bg-gradient-to-r from-[#D4D925] to-gray-300 text-transparent bg-clip-text drop-shadow-lg animate-pulse">
           {!search ? "All Podcasts" : "Search results for "}
           {search && <span className="text-white-2">{search}</span>}
         </h1>

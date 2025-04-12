@@ -15,7 +15,7 @@ const Podcasters = () => {
   return (
     <div className="mt-9 flex flex-col gap-9 md:overflow-hidden">
       <section className="flex flex-col gap-5">
-        <h1 className="text-20 font-bold text-white-1">All Podcasters</h1>
+        <h1 className="text-24 font-extrabold bg-gradient-to-r from-[#D4D925] to-gray-300 text-transparent bg-clip-text drop-shadow-lg animate-pulse">All Podcasters</h1>
         <div className="podcast_grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {topPodcasters?.map((podcaster) => (
             <PodcasterProfileCard

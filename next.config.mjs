@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
-    typescript: {
-        ignoreBuildErrors: true,
-    },
     images: {
         remotePatterns: [
             {
@@ -16,6 +14,10 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'img.clerk.com'
+            },
+            {
+                protocol: 'https',
+                hostname: 'avid-poodle-838.convex.cloud' // ✅ Add this hostname
             }
         ]
     }

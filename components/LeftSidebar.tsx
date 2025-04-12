@@ -2,13 +2,12 @@
 
 import { sidebarLinks } from "@/constants";
 import { cn } from "@/lib/utils";
+import { useAudio } from "@/providers/AudioProvider";
 import { SignedIn, SignedOut, useClerk } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React from "react";
 import { Button } from "./ui/button";
-import { useAudio } from "@/providers/AudioProvider";
 
 const LeftSidebar = () => {
   const pathname = usePathname();
@@ -27,10 +26,12 @@ const LeftSidebar = () => {
           href="/"
           className="flex cursor-pointer items-center gap-1 pb-10 max-lg:justify-center"
         >
-          <Image src="/icons/logo.svg" alt="logo" width={23} height={27} />
-          <h1 className="text-24 font-extrabold text-white max-lg:hidden">
-            Podcastr
-          </h1>
+          <div className="flex items-center gap-2">
+            <Image src="/icons/logo.svg" alt="logo" width={30} height={30} />
+            <h1 className="text-24 font-extrabold text-orange-1 tracking-wide border-l-4 border-orange-1 pl-3">
+              Podcraft
+            </h1>
+          </div>
         </Link>
 
         {sidebarLinks.map(({ route, label, imgURL }) => {
@@ -42,9 +43,9 @@ const LeftSidebar = () => {
               <Link
                 href={route}
                 className={cn(
-                  "flex gap-3 items-center py-4 max-lg:px-4 justify-center lg:justify-start",
+                  "flex gap-3 items-center font-extrabold text-orange-1 py-4 max-lg:px-4 justify-center lg:justify-start",
                   {
-                    "bg-nav-focus border-r-4 border-orange-1": isActive,
+                    "bg-nav-focus border-r-4 text-white-1 border-orange-1": isActive,
                   }
                 )}
               >
@@ -57,9 +58,9 @@ const LeftSidebar = () => {
               href={route}
               key={label}
               className={cn(
-                "flex gap-3 items-center py-4 max-lg:px-4 justify-center lg:justify-start",
+                "flex gap-3 font-extrabold text-orange-1 items-center py-4 max-lg:px-4 justify-center lg:justify-start",
                 {
-                  "bg-nav-focus border-r-4 border-orange-1": isActive,
+                  "bg-nav-focus border-r-4 text-white-1 border-orange-1": isActive,
                 }
               )}
             >

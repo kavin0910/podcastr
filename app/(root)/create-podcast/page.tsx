@@ -1,14 +1,15 @@
-"use client";
+ "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import GeneratePodcast from "@/components/GeneratePodcast";
+import GenerateThumbnail from "@/components/GenerateThumbnail";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,21 +24,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import GeneratePodcast from "@/components/GeneratePodcast";
-import GenerateThumbnail from "@/components/GenerateThumbnail";
-import { Loader } from "lucide-react";
-import { Id } from "@/convex/_generated/dataModel";
 import { useToast } from "@/components/ui/use-toast";
-import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useRouter } from "next/navigation";
+import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/nextjs";
+import { useMutation, useQuery } from "convex/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const voiceCategories = ["alloy", "shimmer", "nova", "echo", "fable", "onyx"];
-
 const podcastCategories = [
   "business",
   "technology",
@@ -62,31 +58,31 @@ const formSchema = z.object({
 const CreatePodcast = () => {
   const router = useRouter();
   const { user } = useUser();
-  console.log(user, "user");
-
+  const { toast } = useToast();
+  
+  // Podcast state
   const [imagePrompt, setImagePrompt] = useState("");
-  const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(
-    null
-  );
+  const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(null);
   const [imageUrl, setImageUrl] = useState("");
-
   const [audioUrl, setAudioUrl] = useState("");
-  const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(
-    null
-  );
+  const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null>(null);
   const [audioDuration, setAudioDuration] = useState(0);
-
   const [voiceType, setVoiceType] = useState<string | null>(null);
   const [categoryType, setCategoryType] = useState<string | null>(null);
-
   const [voicePrompt, setVoicePrompt] = useState("");
-
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
+  const [podcastLimitExceeded, setPodcastLimitExceeded] = useState(false);
 
-  const createPodcast = useMutation(api.podcast.createPodcast);
-  const getUserPodcasts = useQuery(api.podcast.getUserPodcasts);
+  // Get user from Convex
+  const convexUser = useQuery(api.users.getUserById, user?.id ? { clerkId: user.id } : "skip");
 
+  // Ensure convexUser exists before making the second query
+  const podcasts = useQuery(api.podcasts.getUserPodcasts, convexUser ? { userId: convexUser._id } : "skip");
+
+  // Mutation to create a podcast
+  const createPodcast = useMutation(api.podcasts.createPodcast);
+
+  // React Hook Form setup
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -95,46 +91,32 @@ const CreatePodcast = () => {
     },
   });
 
-  const [podcastLimitExceeded, setPodcastLimitExceeded] = useState(false);
-
   useEffect(() => {
-    if (user) {
-      // Ensure getUserPodcasts is populated and the user email matches
-      const emailMatches =
-        user?.primaryEmailAddress?.emailAddress === "mittalmuskan758@gmail.com"; // Replace with the email you expect
+    if (user && podcasts) {
+      const emailMatches = user?.primaryEmailAddress?.emailAddress === "23mx211@psgtech.ac.in";
+      const hasPodcast = podcasts.length >= 1;
 
-      const podcastsExist = getUserPodcasts && getUserPodcasts.length >= 1;
-
-      if (podcastsExist && !emailMatches) {
-        setPodcastLimitExceeded(true);
-      } else {
-        setPodcastLimitExceeded(false);
-      }
+      // Only users with a specific email can create more than 1 podcast
+      setPodcastLimitExceeded(hasPodcast && !emailMatches);
     }
-  }, [user, getUserPodcasts]);
+  }, [user, podcasts]);
 
-  // 2. Define a submit handler.
+  // Handle form submission
   async function onSubmit(data: z.infer<typeof formSchema>) {
     if (podcastLimitExceeded) {
-      toast({
-        title: "Limit exhausted",
-        description: "You can only create 1 podcast.",
-      });
+      toast({ title: "Limit exhausted", description: "You can only create 1 podcast." });
+      return;
+    }
+
+    if (!audioUrl || !imageUrl || !voiceType || !categoryType) {
+      toast({ title: "Please generate audio and image before submitting." });
       return;
     }
 
     try {
       setIsSubmitting(true);
-      if (!audioUrl || !imageUrl || !voiceType || !categoryType) {
-        toast({
-          title: "Please generate audio and image",
-        });
-        setIsSubmitting(false);
-        throw new Error("Please generate audio and image");
-      }
 
-      // await CreatePodcast
-      const podcast = await createPodcast({
+      await createPodcast({
         podcastTitle: data.podcastTitle,
         podcastDescription: data.podcastDescription,
         audioUrl,
@@ -148,176 +130,86 @@ const CreatePodcast = () => {
         audioStorageId: audioStorageId!,
         imageStorageId: imageStorageId!,
       });
-      toast({
-        title: "Podcast created",
-      });
-      setIsSubmitting(false);
+
+      toast({ title: "Podcast created successfully!" });
       router.push("/");
     } catch (error) {
-      console.log(error);
-      toast({ title: "Error", variant: "destructive" });
+      console.error("Podcast creation error:", error);
+      toast({ title: "Error", description: "Something went wrong!", variant: "destructive" });
+    } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
     <section className="mt-10 flex flex-col">
-      <h1 className="text-20 font-bold text-white-1">Create Podcast</h1>
+      <h1 className="text-24 font-extrabold bg-gradient-to-r from-[#D4D925] to-gray-300 text-transparent bg-clip-text drop-shadow-lg animate-pulse">
+      Create Podcast
+      </h1>
+
 
       {podcastLimitExceeded ? (
-        <p className="text-red-500">
-          You have exhausted your podcast creation limit.
-        </p>
+        <p className="text-red-500">You have exhausted your podcast creation limit.</p>
       ) : (
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="mt-12 flex w-full flex-col"
-          >
-            <div className="flex flex-col gap-[30px] border-b border-black-5 pb-10">
-              <FormField
-                control={form.control}
-                name="podcastTitle"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col gap-2.5">
-                    <FormLabel className="text-16 font-bold text-white-1">
-                      Title
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        className="input-class focus-visible:ring-offset-orange-1"
-                        placeholder="JSM Pro Podcast"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-white-1" />
-                  </FormItem>
-                )}
-              />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-12 flex w-full flex-col">
+            <FormField control={form.control} name="podcastTitle" render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-orange-1">Title</FormLabel>
+                <FormControl>
+                  <Input className="bg-gray-800" placeholder="Enter podcast title" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-              <div className="flex flex-col gap-2.5">
-                <Label className="text-16 font-bold text-white-1">
-                  Select AI Voice
-                </Label>
+            <FormField control={form.control} name="podcastDescription" render={({ field }) => (
+              <FormItem className="mt-4">
+                <FormLabel className="text-orange-1">Description</FormLabel>
+                <FormControl>
+                  <Textarea className="bg-gray-800" placeholder="Write a short podcast description" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-                <Select onValueChange={(value) => setVoiceType(value)}>
-                  <SelectTrigger
-                    className={cn(
-                      "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
-                    )}
-                  >
-                    <SelectValue
-                      placeholder="Select AI Voice"
-                      className="placeholder:text-gray-1"
-                    />
-                  </SelectTrigger>
-                  <SelectContent className="text-16 border-none bg-black-1 font-bold text-white-1 focus:ring-offset-orange-1">
-                    {voiceCategories.map((category) => (
-                      <SelectItem
-                        key={category}
-                        value={category}
-                        className="capitalize focus:ring-offset-orange-1"
-                      >
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                  {voiceType && (
-                    <audio
-                      src={`/${voiceType}.mp3`}
-                      autoPlay
-                      className="hidden"
-                    />
-                  )}
-                </Select>
-              </div>
-
-              <FormField
-                control={form.control}
-                name="podcastDescription"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col gap-2.5">
-                    <FormLabel className="text-16 font-bold text-white-1">
-                      Description
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        className="input-class focus-visible:ring-offset-orange-1"
-                        placeholder="Write a short podacst description"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-white-1" />
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex flex-col gap-2.5">
-                <Label className="text-16 font-bold text-white-1">
-                  Select Category
-                </Label>
-
-                <Select onValueChange={(value) => setCategoryType(value)}>
-                  <SelectTrigger
-                    className={cn(
-                      "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
-                    )}
-                  >
-                    <SelectValue
-                      placeholder="Select Category"
-                      className="placeholder:text-gray-1"
-                    />
-                  </SelectTrigger>
-                  <SelectContent className="text-16 border-none bg-black-1 font-bold text-white-1 focus:ring-offset-orange-1">
-                    {podcastCategories.map((category) => (
-                      <SelectItem
-                        key={category}
-                        value={category}
-                        className="capitalize focus:ring-offset-orange-1"
-                      >
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="mt-6 flex flex-col gap-2">
+              <Label className="text-orange-1">Select AI Voice</Label>
+              <Select onValueChange={setVoiceType}>
+                <SelectTrigger className="w-full text-white-1 bg-gray-800 text-white border border-gray-700 rounded-lg p-3">
+                  <SelectValue className="text-white-1" placeholder="Select AI Voice" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 text-white border border-gray-700 rounded-lg">
+                  {voiceCategories.map((category) => (
+                    <SelectItem key={category} value={category} className="p-2 hover:bg-gray-700 text-white-1">
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="flex flex-col pt-10">
-              <GeneratePodcast
-                setAudioStorageId={setAudioStorageId}
-                setAudio={setAudioUrl}
-                voiceType={voiceType!}
-                audio={audioUrl}
-                voicePrompt={voicePrompt}
-                setVoicePrompt={setVoicePrompt}
-                setAudioDuration={setAudioDuration}
-              />
-              <GenerateThumbnail
-                setImage={setImageUrl}
-                setImageStorageId={setImageStorageId}
-                image={imageUrl}
-                imagePrompt={imagePrompt}
-                setImagePrompt={setImagePrompt}
-              />
+            <GeneratePodcast
+              setAudioStorageId={setAudioStorageId}
+              setAudio={setAudioUrl}
+              voiceType={voiceType!}
+              audio={audioUrl}
+              voicePrompt={voicePrompt}
+              setVoicePrompt={setVoicePrompt}
+              setAudioDuration={setAudioDuration}
+            />
 
-              <div className="mt-10 w-full">
-                <Button
-                  type="submit"
-                  className="text-16 w-full bg-orange-1 py-4 font-extrabold text-white-1 transition-all duration-500 hover:bg-black-1"
-                >
-                  {isSubmitting ? (
-                    <>
-                      Submitting
-                      <Loader size={20} className="animate-pin mr-2" />
-                    </>
-                  ) : (
-                    "Submit & Publish Podcast"
-                  )}
-                </Button>
-              </div>
-            </div>
-            <Button type="submit">Submit</Button>
+            <GenerateThumbnail
+              setImage={setImageUrl}
+              setImageStorageId={setImageStorageId}
+              image={imageUrl}
+              imagePrompt={imagePrompt}
+              setImagePrompt={setImagePrompt}
+            />
+
+            <Button className="text-lg font-bold bg-orange-1 text-white-1 mt-5" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit & Publish Podcast"}
+            </Button>
           </form>
         </Form>
       )}

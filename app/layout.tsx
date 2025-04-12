@@ -1,13 +1,13 @@
+import AudioProvider from "@/providers/AudioProvider";
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
-import "./globals.css";
 import ConvexClerkProvider from "../providers/ConvexClerkProvider";
-import AudioProvider from "@/providers/AudioProvider";
+import "./globals.css";
 
 const manrope = Manrope({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Podcastr",
+  title: "Podcraft",
   description: "Generate your podcasts using AI",
   icons: {
     icon: '/icons/logo.svg'

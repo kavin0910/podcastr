@@ -91,7 +91,7 @@ const PodcastForm = ({ existingData }: PodcastFormProps) => {
   const { toast } = useToast();
 
   // Use the mutation hook to update podcasts
-  const updatePodcast = useMutation(api.podcast.updatePodcast);
+  const updatePodcast = useMutation(api.podcasts.updatePodcast);
 
   useEffect(() => {
     if (isSuccess) {
